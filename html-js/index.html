@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Javascript Test</title>
+  </head>
+  <body>
+    <form type="POST">
+      ឆ្នាំ: <input type="text" id="year" name="year" />
+      <div class="result"></div>
+      <button type="submit" id="calculateBtn">បញ្ចេញលទ្ធផល</button>
+    </form>
+
+    <script>
+      function countWorkingDays(year) {
+        let totalWorkingDays = 0;
+        let holidays = [
+          `${year}-01-07`,
+          `${year}-04-13`,
+          `${year}-04-14`,
+          `${year}-04-15`,
+          `${year}-05-01`,
+          `${year}-06-18`,
+          `${year}-11-09`,
+          `${year}-12-10`,
+        ];
+
+        let start = new Date(year, 0, 1); // January 1st
+        let end = new Date(year, 11, 31); // December 31st
+
+        while (start <= end) {
+          let dayOfWeek = start.getDay(); // 0 = Sunday, 6 = Saturday
+          let dateStr = start.toISOString().split("T")[0];
+
+          if (holidays.includes(dateStr)) {
+            // Skip full holidays
+          } else if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            // Monday to Friday are full working days
+            totalWorkingDays++;
+          } else if (dayOfWeek === 6) {
+            // Check if Friday is a holiday
+            let friday = new Date(start);
+            friday.setDate(start.getDate() - 1);
+            let fridayStr = friday.toISOString().split("T")[0];
+
+            if (holidays.includes(fridayStr)) {
+              // If Friday is a holiday, Saturday is a full holiday
+            } else {
+              // Otherwise, Saturday is a half-day
+              totalWorkingDays += 0.5;
+            }
+          }
+
+          start.setDate(start.getDate() + 1); // Move to the next day
+        }
+
+        return totalWorkingDays;
+      }
+
+      function calculate() {
+        let year = document.getElementById("year").value;
+        if (!year || isNaN(year)) {
+          alert("Please enter a valid year");
+          return;
+        }
+        let result = countWorkingDays(parseInt(year));
+        document.querySelector(
+          ".result"
+        ).innerText = `Total working days in ${year}: ${result}`;
+      }
+
+      // Attach the event listener after the DOM is loaded
+      document
+        .getElementById("calculateBtn")
+        .addEventListener("click", function (event) {
+          event.preventDefault();
+          calculate();
+        });
+    </script>
+  </body>
+</html>
